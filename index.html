@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commander Bracket Ranker</title>
+    <style>
+        :root {
+            --bg: #f4f4f9;
+            --card: #ffffff;
+            --primary: #d32f2f;
+            --accent: #ffa000;
+            --text: #333;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; }
+        .container { background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        h1 { text-align: center; color: var(--primary); margin-bottom: 5px; }
+        p.subtitle { text-align: center; font-size: 0.9em; color: #666; margin-bottom: 25px; }
+        
+        .stat-row { margin-bottom: 20px; }
+        .label-group { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; }
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--primary); }
+        
+        .points-remaining { text-align: center; font-size: 1.2em; font-weight: bold; margin: 20px 0; padding: 10px; border-radius: 8px; background: #eee; }
+        .points-remaining.error { color: var(--primary); background: #ffebee; }
+        
+        #result-area { margin-top: 25px; display: none; border-top: 2px solid #eee; padding-top: 20px; text-align: center; }
+        .bracket-badge { display: inline-block; padding: 8px 16px; border-radius: 20px; color: white; font-weight: bold; font-size: 1.2em; margin-bottom: 10px; }
+        
+        /* Bracket Colors */
+        .b1 { background-color: #b0bec5; } /* Exhibition */
+        .b2 { background-color: #81c784; } /* Core */
+        .b3 { background-color: #64b5f6; } /* Upgraded */
+        .b4 { background-color: #9575cd; } /* Optimized */
+        .b5 { background-color: #d32f2f; } /* cEDH */
+
+        .desc { font-size: 0.95em; line-height: 1.4; color: #555; text-align: left; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Deck Ranker</h1>
+    <p class="subtitle">Distribute 10 points based on your deck's intent.</p>
+
+    <div id="inputs">
+        <div class="stat-row">
+            <div class="label-group"><span>Expression (Theme/Art)</span> <span id="v1">0</span></div>
+            <input type="range" id="expression" min="0" max="10" value="0" oninput="update()">
+        </div>
+        <div class="stat-row">
+            <div class="label-group"><span>Social Fun (Interaction/Politics)</span> <span id="v2">0</span></div>
+            <input type="range" id="social" min="0" max="10" value="0" oninput="update()">
+        </div>
+        <div class="stat-row">
+            <div class="label-group"><span>Do the Thing (Synergy/Engine)</span> <span id="v3">0</span></div>
+            <input type="range" id="engine" min="0" max="10" value="0" oninput="update()">
+        </div>
+        <div class="stat-row">
+            <div class="label-group"><span>Winning (Efficiency/Speed)</span> <span id="v4">0</span></div>
+            <input type="range" id="winning" min="0" max="10" value="0" oninput="update()">
+        </div>
+    </div>
+
+    <div id="points-bar" class="points-remaining">Points Remaining: 10</div>
+
+    <div id="result-area">
+        <div id="bracket-label" class="bracket-badge"></div>
+        <div id="bracket-desc" class="desc"></div>
+    </div>
+</div>
+
+<script>
+    const brackets = [
+        { name: "Bracket 1: Exhibition", class: "b1", desc: "Prioritizes theme and expression over power. Expect games to last 9+ turns with no infinite combos." },
+        { name: "Bracket 2: Core", class: "b2", desc: "Mechanically focused but creative. Low pressure, proactive gameplay. Expect games to last 8+ turns." },
+        { name: "Bracket 3: Upgraded", class: "b3", desc: "Strong synergy and high card quality. Can effectively disrupt opponents. Expect 6+ turn games." },
+        { name: "Bracket 4: Optimized", class: "b4", desc: "Lethal, consistent, and fast. Explosive threats and efficient disruption. Expect games to end around turn 4." },
+        { name: "Bracket 5: cEDH", class: "b5", desc: "Meticulously designed for the metagame. Maximum efficiency. Victory over all else. Games can end on any turn." }
+    ];
+
+    function update() {
+        const v1 = parseInt(document.getElementById('expression').value);
+        const v2 = parseInt(document.getElementById('social').value);
+        const v3 = parseInt(document.getElementById('engine').value);
+        const v4 = parseInt(document.getElementById('winning').value);
+
+        document.getElementById('v1').innerText = v1;
+        document.getElementById('v2').innerText = v2;
+        document.getElementById('v3').innerText = v3;
+        document.getElementById('v4').innerText = v4;
+
+        const total = v1 + v2 + v3 + v4;
+        const remaining = 10 - total;
+        const bar = document.getElementById('points-bar');
+        const resultArea = document.getElementById('result-area');
+
+        bar.innerText = `Points Remaining: ${remaining}`;
+        
+        if (remaining < 0) {
+            bar.classList.add('error');
+            bar.innerText = `Over Limit by ${Math.abs(remaining)}!`;
+            resultArea.style.display = 'none';
+        } else if (remaining > 0) {
+            bar.classList.remove('error');
+            resultArea.style.display = 'none';
+        } else {
+            bar.classList.remove('error');
+            calculateBracket(v1, v2, v3, v4);
+        }
+    }
+
+    function calculateBracket(exp, soc, eng, win) {
+        // Calculation logic:
+        // Winning has the highest weight for upper brackets.
+        // Expression/Social have the highest weight for lower brackets.
+        // We calculate a weighted 'Power Score' out of 10.
+        
+        const powerScore = ( (win * 1.0) + (eng * 0.7) + (soc * 0.3) + (exp * 0.1) ) / 1.5;
+        
+        // Map the score to 0-4 index
+        let index = 0;
+        if (win >= 7) index = 4; // cEDH focus
+        else if (win >= 5 || (win + eng >= 8)) index = 3; // Optimized
+        else if (win >= 3 || eng >= 5) index = 2; // Upgraded
+        else if (exp >= 5 || soc >= 5) index = 0; // Exhibition
+        else index = 1; // Core default
+
+        const bracket = brackets[index];
+        
+        document.getElementById('result-area').style.display = 'block';
+        const label = document.getElementById('bracket-label');
+        label.innerText = bracket.name;
+        label.className = 'bracket-badge ' + bracket.class;
+        document.getElementById('bracket-desc').innerText = bracket.desc;
+    }
+</script>
+
+</body>
+</html>
