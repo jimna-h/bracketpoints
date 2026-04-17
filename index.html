@@ -3,47 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Commander Bracket Ranker (32pt Scale)</title>
+    <title>Commander Bracket Ranker</title>
     <style>
         :root {
             --bg: #f0f2f5;
             --card: #ffffff;
             --primary: #c62828;
-            --accent: #f9a825;
             --text: #2c3e50;
         }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; }
         .container { background: var(--card); padding: 35px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.12); width: 100%; max-width: 600px; }
-        h1 { text-align: center; color: var(--primary); margin: 0 0 5px 0; letter-spacing: -1px; }
-        p.subtitle { text-align: center; font-size: 0.95em; color: #666; margin-bottom: 30px; }
+        h1 { text-align: center; color: var(--primary); margin: 0; letter-spacing: -1px; }
+        p.subtitle { text-align: center; font-size: 0.9em; color: #666; margin-bottom: 30px; }
         
-        .stat-row { margin-bottom: 28px; background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 10px; }
-        .label-group { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px; }
+        .stat-row { margin-bottom: 25px; background: #fafafa; border: 1px solid #eee; padding: 15px; border-radius: 10px; }
+        .label-group { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 800; font-size: 0.85em; text-transform: uppercase; }
         .val-display { color: var(--primary); font-size: 1.2em; }
         
-        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--primary); margin-bottom: 10px; }
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--primary); }
         
-        .flavor-text { font-size: 0.9em; color: #555; line-height: 1.4; border-left: 3px solid #eee; padding-left: 10px; min-height: 2.8em; display: flex; align-items: center; }
+        .flavor-text { font-size: 0.9em; color: #555; line-height: 1.3; margin-top: 10px; min-height: 2.6em; border-left: 3px solid #ddd; padding-left: 10px; display: flex; align-items: center; }
 
-        .points-remaining { text-align: center; font-size: 1.1em; font-weight: bold; margin: 20px 0; padding: 15px; border-radius: 8px; background: #e9ecef; transition: all 0.3s ease; }
+        .points-remaining { text-align: center; font-size: 1.1em; font-weight: bold; margin: 20px 0; padding: 15px; border-radius: 8px; background: #e9ecef; }
         .points-remaining.error { color: #fff; background: #d32f2f; }
-        .points-remaining.success { color: #fff; background: #2e7d32; border-color: #1b5e20; }
+        .points-remaining.success { color: #fff; background: #2e7d32; }
         
-        #result-area { margin-top: 30px; display: none; border-top: 3px double #eee; padding-top: 25px; animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #result-area { margin-top: 30px; display: none; border-top: 3px double #eee; padding-top: 25px; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        .bracket-badge { display: inline-block; padding: 10px 20px; border-radius: 30px; color: white; font-weight: 900; font-size: 1.3em; margin-bottom: 15px; text-transform: uppercase; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        
+        .bracket-badge { display: inline-block; padding: 10px 20px; border-radius: 30px; color: white; font-weight: 900; font-size: 1.3em; margin-bottom: 15px; }
         .b1 { background: #78909c; } .b2 { background: #66bb6a; } .b3 { background: #42a5f5; } .b4 { background: #7e57c2; } .b5 { background: #ef5350; }
-        .desc { font-size: 1em; line-height: 1.5; color: #444; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 8px; }
-        strong { color: #000; }
+        .desc { font-size: 0.95em; line-height: 1.5; color: #444; background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: left; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Commander Ranker</h1>
-    <p class="subtitle">Distribute <strong>32 points</strong> across these four pillars.</p>
+    <p class="subtitle">Max 8 per stat. <strong>10 Points Total Pool.</strong></p>
 
     <div id="inputs">
         <div class="stat-row">
@@ -68,7 +65,7 @@
         </div>
     </div>
 
-    <div id="points-bar" class="points-remaining">Points Remaining: 32</div>
+    <div id="points-bar" class="points-remaining">Points Remaining: 10</div>
 
     <div id="result-area">
         <div id="bracket-label" class="bracket-badge"></div>
@@ -79,57 +76,57 @@
 <script>
     const flavor = {
         expression: [
-            "Purely functional. Art and flavor have zero impact on card choice.",
-            "I have a few favorites, but power always comes first.",
-            "I’ll pick the 'cool' printing of a staple, but won't change the list.",
-            "I'll choose a similar effect over a better card because of the art.",
-            "Theme-driven: The deck is built around a clear visual or lore concept.",
-            "Strong commitment: I won't play certain 'best' cards if they ruin the vibe.",
-            "Substantial flavor: Card names and flavor text are as important as the mechanics.",
-            "Extreme dedication: Every basic land and token is curated to the theme.",
-            "Full Vibe: This is my 'Guys Sitting in Chairs' deck! Perfection over power."
+            "Functional only. Card choice is 100% power-driven.",
+            "I have a favorite basic land, but that's about it.",
+            "I'll choose a specific printing if it looks cool.",
+            "I'll choose a similar effect over a better card for the art.",
+            "Theme-driven: The deck has a clear visual or lore soul.",
+            "I've cut 'best in slot' cards because they didn't fit the vibe.",
+            "The deck tells a story. Efficiency is secondary to the narrative.",
+            "Every card, token, and land is curated to a strict aesthetic.",
+            "Full Vibe: This is my 'Guys Sitting in Chairs' deck! Victory is irrelevant."
         ],
         social: [
-            "Interaction is purely to protect my win or stop yours.",
-            "I play efficient, cold-blooded interaction (Free spells, silence).",
-            "I include some 'fair' interaction to keep the board from stalling.",
-            "I enjoy making deals and playing 'politics' during the game.",
-            "I avoid 'unfun' mechanics like MLD or hard locks to keep things social.",
-            "I run cards that give opponents choices or create mini-games.",
-            "I'm happy to lose as long as the table had a memorable game.",
-            "I prioritize the table's enjoyment over my own narrow path to victory.",
+            "Winning is the goal; the social contract is a secondary concern.",
+            "I use efficient interaction to stop others from winning.",
+            "I'll make deals, but only if they directly lead to my victory.",
+            "I enjoy the political 'table talk' and making temporary allies.",
+            "I avoid 'unfun' mechanics (MLD/Stax) to keep the vibe positive.",
+            "I play cards that create interesting choices for the whole table.",
+            "I want everyone to 'do their thing' even if it means I might lose.",
+            "The social experience is more important than the game state.",
             "Pure Social: I am essentially a 100-card dungeon master for the table."
         ],
         engine: [
-            "No specific engine. Just 99 'good stuff' cards.",
-            "Standard tribal/archetype synergies (e.g. 'I play elves').",
-            "The deck has a clear mechanical loop it wants to establish.",
-            "I spend several turns carefully assembling a value engine.",
-            "The deck is built around a specific, unique commander ability.",
-            "If the engine is left alone for 2 turns, I will likely run away with value.",
-            "The deck is a Rube Goldberg machine of interconnected triggered abilities.",
-            "I'll keep the engine running even if it doesn't lead directly to a win.",
-            "The 'Thing' is the goal. I'll spend 20 minutes on a turn just to draw my deck."
+            "Good stuff only. No specific mechanical engine required.",
+            "Light tribal or archetype synergy.",
+            "A clear mechanical goal exists (e.g., 'I want to sacrifice creatures').",
+            "I spend the early game setting up a steady value engine.",
+            "The deck revolves entirely around the Commander's unique trigger.",
+            "If left alone, my engine will generate overwhelming resources.",
+            "A Rube Goldberg machine. Complex, interconnected triggers.",
+            "I'll keep the engine running just to see how much value I can get.",
+            "The 'Thing' is the goal. I'll take a 20-min turn just to draw cards."
         ],
         winning: [
-            "Winning is not the goal. I am here to witness the game.",
-            "I might win by accident if the game lasts 15 turns.",
-            "I use standard combat and high-MV spells to close out the game.",
-            "I run a few tutors and a clear 'finisher' card (Craterhoof, etc).",
-            "Speed is a factor. I aim to threaten a win by turns 7-8.",
-            "Consistent and fast. I use 2-card combos and efficient tutors.",
+            "Winning isn't part of the plan. I'm just happy to be here.",
+            "I might win via accidental combat damage in turn 15+.",
+            "Standard win-cons. Big creatures or high-mana spells.",
+            "I have a few tutors and a reliable 'finisher' card.",
+            "Speed is a factor. I can threaten a win around turn 7-9.",
+            "Lethal & Consistent. I run 2-card combos and fast tutors.",
             "Optimized: High-power staples and fast mana are included.",
-            "cEDH Leanings: My deck is built to win or lock the game by turn 3-4.",
-            "Victory over all: This is a top-tier meta list. Efficiency is absolute."
+            "cEDH Prep: Built to win or lock the board by turn 3-4.",
+            "Absolute Efficiency: A top-tier meta list. Victory at all costs."
         ]
     };
 
     const brackets = [
-        { name: "Bracket 1: Exhibition", class: "b1", desc: "<strong>Players Expect:</strong> Decks to prioritize theme over power. Games to last 9+ turns. <strong>Restricted:</strong> No 2-card combos or mass land denial." },
-        { name: "Bracket 2: Core", class: "b2", desc: "<strong>Players Expect:</strong> Mechanically focused but creative. Low pressure, proactive play. Games to last 8+ turns. <strong>Restricted:</strong> No 2-card combos or lockouts." },
-        { name: "Bracket 3: Upgraded", class: "b3", desc: "<strong>Players Expect:</strong> Strong synergy and high card quality. Many proactive and reactive plays. Games to last 6+ turns. <strong>Restricted:</strong> No 2-card combos before turn 6." },
-        { name: "Bracket 4: Optimized", class: "b4", desc: "<strong>Players Expect:</strong> Lethal, consistent, and fast. Explosive threats and efficient disruption. Games to last 4+ turns. <strong>Restricted:</strong> None." },
-        { name: "Bracket 5: cEDH", class: "b5", desc: "<strong>Players Expect:</strong> Meticulously designed for the cEDH metagame. Razor-thin margins for error. Games can end on any turn. <strong>Restricted:</strong> None." }
+        { name: "Bracket 1: Exhibition", class: "b1", desc: "Prioritizes theme/expression. Substandard win-cons. Expect 9+ turns." },
+        { name: "Bracket 2: Core", class: "b2", desc: "Mechanically focused but creative. Low pressure. Expect 8+ turns." },
+        { name: "Bracket 3: Upgraded", class: "b3", desc: "Strong synergy and quality. Proactive and reactive. Expect 6+ turns." },
+        { name: "Bracket 4: Optimized", class: "b4", desc: "Lethal, fast, and consistent. Explosive threats. Expect 4+ turns." },
+        { name: "Bracket 5: cEDH", class: "b5", desc: "Meticulously designed for the cEDH metagame. Victory over all else." }
     ];
 
     function update() {
@@ -149,48 +146,41 @@
         document.getElementById('f4').innerText = flavor.winning[v4];
 
         const total = v1 + v2 + v3 + v4;
-        const remaining = 32 - total;
+        const remaining = 10 - total;
         const bar = document.getElementById('points-bar');
-        const resultArea = document.getElementById('result-area');
+        const resArea = document.getElementById('result-area');
 
         if (remaining < 0) {
             bar.className = 'points-remaining error';
-            bar.innerText = `Over Limit by ${Math.abs(remaining)}! (Total: ${total})`;
-            resultArea.style.display = 'none';
+            bar.innerText = `Over Limit by ${Math.abs(remaining)}!`;
+            resArea.style.display = 'none';
         } else if (remaining > 0) {
             bar.className = 'points-remaining';
             bar.innerText = `Points Remaining: ${remaining}`;
-            resultArea.style.display = 'none';
+            resArea.style.display = 'none';
         } else {
             bar.className = 'points-remaining success';
-            bar.innerText = `Points Balanced! (32/32)`;
+            bar.innerText = `Points Balanced!`;
             calculateBracket(v1, v2, v3, v4);
         }
     }
 
     function calculateBracket(exp, soc, eng, win) {
-        let index = 1; // Default to Core
+        let index = 1;
         
-        // Threshold-based Logic for 8pt scale
-        if (win >= 7) {
-            index = 4; // cEDH
-        } else if (win >= 5 || (win >= 4 && eng >= 6)) {
-            index = 3; // Optimized
-        } else if (win >= 3 || eng >= 4) {
-            index = 2; // Upgraded
-        } else if (exp >= 6 || soc >= 6) {
-            index = 0; // Exhibition
-        } else {
-            index = 1; // Core
-        }
+        // Logical mapping for 10-point pool
+        if (win >= 7) index = 4; // cEDH
+        else if (win >= 5 || (win >= 4 && eng >= 4)) index = 3; // Optimized
+        else if (win >= 3 || eng >= 5) index = 2; // Upgraded
+        else if (exp >= 5 || soc >= 5) index = 0; // Exhibition
+        else index = 1; // Core
         
         const bracket = brackets[index];
-        const res = document.getElementById('result-area');
-        res.style.display = 'block';
+        resArea.style.display = 'block';
         const label = document.getElementById('bracket-label');
         label.innerText = bracket.name;
         label.className = 'bracket-badge ' + bracket.class;
-        document.getElementById('bracket-desc').innerHTML = bracket.desc;
+        document.getElementById('bracket-desc').innerText = bracket.desc;
     }
 
     update();
