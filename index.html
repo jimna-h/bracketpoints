@@ -11,20 +11,20 @@
             --primary: #b71c1c;
             --text: #1c1c1e;
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; }
         .container { background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 580px; }
         h1 { text-align: center; color: var(--primary); margin: 0; font-weight: 800; letter-spacing: -0.5px; }
         p.subtitle { text-align: center; font-size: 0.9em; color: #8e8e93; margin-bottom: 30px; }
         
-        .stat-row { margin-bottom: 25px; border-bottom: 1px solid #f2f2f7; padding-bottom: 15px; }
-        .label-group { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 700; font-size: 0.9em; text-transform: uppercase; color: #48484a; }
-        .val-display { color: var(--primary); font-size: 1.1em; background: #fff5f5; padding: 2px 8px; border-radius: 6px; }
+        .stat-row { margin-bottom: 20px; border-bottom: 1px solid #f2f2f7; padding-bottom: 12px; }
+        .label-group { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 700; font-size: 0.85em; text-transform: uppercase; color: #48484a; }
+        .val-display { color: var(--primary); font-size: 1.1em; font-weight: 800; }
         
-        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--primary); margin: 10px 0; }
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--primary); margin: 8px 0; }
         
-        .flavor-text { font-size: 0.9em; color: #636366; line-height: 1.4; min-height: 3em; display: flex; align-items: flex-start; margin-top: 5px; }
+        .flavor-text { font-size: 0.85em; color: #636366; line-height: 1.4; min-height: 2.8em; margin-top: 5px; font-style: italic; }
 
-        .points-remaining { text-align: center; font-size: 1em; font-weight: 700; margin: 20px 0; padding: 12px; border-radius: 12px; background: #e5e5ea; transition: 0.3s; }
+        .points-remaining { text-align: center; font-size: 1em; font-weight: 700; margin: 20px 0; padding: 12px; border-radius: 12px; background: #e5e5ea; }
         .points-remaining.error { color: #fff; background: #ff3b30; }
         .points-remaining.success { color: #fff; background: #34c759; }
         
@@ -39,27 +39,27 @@
 
 <div class="container">
     <h1>Commander Ranker</h1>
-    <p class="subtitle">Assign 10 points total to define your deck's construction.</p>
+    <p class="subtitle">Max 5 per stat. <strong>10 Points Total Pool.</strong></p>
 
     <div id="inputs">
         <div class="stat-row">
-            <div class="label-group"><span>Expression (Art/Theme)</span> <span class="val-display" id="v1">0</span></div>
-            <input type="range" id="expression" min="0" max="8" value="0" oninput="update()">
+            <div class="label-group"><span>Expression</span> <span class="val-display" id="v1">0</span></div>
+            <input type="range" id="expression" min="0" max="5" value="0" oninput="update()">
             <div id="f1" class="flavor-text"></div>
         </div>
         <div class="stat-row">
-            <div class="label-group"><span>Social Fun (Interaction/Politics)</span> <span class="val-display" id="v2">0</span></div>
-            <input type="range" id="social" min="0" max="8" value="0" oninput="update()">
+            <div class="label-group"><span>Social Fun</span> <span class="val-display" id="v2">0</span></div>
+            <input type="range" id="social" min="0" max="5" value="0" oninput="update()">
             <div id="f2" class="flavor-text"></div>
         </div>
         <div class="stat-row">
-            <div class="label-group"><span>Do the Thing (Engine/Synergy)</span> <span class="val-display" id="v3">0</span></div>
-            <input type="range" id="engine" min="0" max="8" value="0" oninput="update()">
+            <div class="label-group"><span>Do the Thing</span> <span class="val-display" id="v3">0</span></div>
+            <input type="range" id="engine" min="0" max="5" value="0" oninput="update()">
             <div id="f3" class="flavor-text"></div>
         </div>
         <div class="stat-row">
-            <div class="label-group"><span>Winning (Efficiency/Meta)</span> <span class="val-display" id="v4">0</span></div>
-            <input type="range" id="winning" min="0" max="8" value="0" oninput="update()">
+            <div class="label-group"><span>Winning</span> <span class="val-display" id="v4">0</span></div>
+            <input type="range" id="winning" min="0" max="5" value="0" oninput="update()">
             <div id="f4" class="flavor-text"></div>
         </div>
     </div>
@@ -76,56 +76,44 @@
     const flavor = {
         expression: [
             "Purely clinical. No aesthetic or thematic constraints.",
-            "Includes 1-2 'pet cards' or specific printings for flavor.",
-            "Visual cohesion: includes themed basics or matching frames.",
-            "Mechanical flavor: cards chosen for name/flavor text over utility.",
-            "Thematic core: deck is built around a specific lore concept or tribe.",
-            "Strict theme: cuts efficient staples that clash with the deck's 'story'.",
-            "Aesthetic-first: every card must share a specific visual style.",
-            "Extreme constraint: e.g. 'all cards must feature art by one artist'.",
+            "Includes 1-2 'pet cards' or flavored basic lands.",
+            "Thematic core: Includes matching card frames or specific tribal art.",
+            "Strict theme: Cuts efficient staples that clash with the deck's lore.",
+            "Aesthetic-first: Every card must share a specific visual style or artist.",
             "Full Vibe: 'Guys Sitting in Chairs.' The deck is a gallery, not a weapon."
         ],
         social: [
             "Cold efficiency. No symmetrical effects or political cards.",
-            "Standard interaction (removal/counters) to manage the board.",
-            "Includes 'fair' cards that give opponents choices (Fact or Fiction).",
-            "Political tools: includes Goad, curses, or voting mechanics.",
-            "Table interaction: includes 'Group Hug' cards like Howling Mine.",
-            "Resource variance: includes cards that create chaotic board states.",
-            "Game extension: deck is built to keep everyone in the game longer.",
-            "Pure diplomacy: deck focuses on symmetrical buffs and gifts.",
-            "Social Engine: The deck exists to facilitate a shared table experience."
+            "Standard interaction. Includes removal to manage the table.",
+            "Political tools. Includes Goad, voting, or 'Choice' cards.",
+            "Table interaction. Symmetrical draws (Howling Mine) or buffs.",
+            "Resource variance. Creates chaotic or unique shared board states.",
+            "Social Engine: Faciliates a narrative game over a competitive one."
         ],
         engine: [
-            "Aggregated value. No specific engine; just powerful individual cards.",
+            "Aggregated value. No specific engine; just high-quality cards.",
             "Basic synergy. Tribal lords or simple 'if/then' interactions.",
-            "Mechanical goal. A clear loop (e.g. aristocrats or enchantress).",
-            "Mid-range engine. Dedicated slots for draw/ramp that fuel a payoff.",
-            "Complex synergy. Deck is built around a specific, unique commander ability.",
-            "High-resource engine. Generates massive mana/cards if not disrupted.",
-            "Rube Goldberg machine. Multiple pieces required for an explosive 'thing'.",
-            "Non-deterministic engine. Long turns spent generating incremental value.",
-            "The Engine IS the Deck. Constructed to 'Do the Thing' regardless of victory."
+            "Mechanical goal. A clear loop (e.g., Aristocrats or Enchantress).",
+            "Complex synergy. Built around a unique, niche commander ability.",
+            "Rube Goldberg. Multiple pieces required for explosive value turns.",
+            "The Thing: Constructed to 'Do the Thing' regardless of the win-con."
         ],
         winning: [
-            "Accidental win-cons. No dedicated finishers or tutors.",
-            "Combat-focused. Wins via board presence and 'fair' damage.",
-            "High-MV finishers. Includes cards like Craterhoof or Insurrection.",
-            "Telegraphed finishers. Wins are visible on-board 1-2 turns away.",
+            "Accidental win-cons. Wins via board presence and 'fair' damage.",
+            "High-MV finishers. Includes cards like Craterhoof found naturally.",
             "Dedicated win-cons. Efficient finishers found via minor tutoring.",
-            "Combo-reliant. Features 2-3 card infinites with standard tutors.",
+            "Combo-reliant. Features 2-3 card infinites and reliable tutors.",
             "Optimized speed. Uses fast mana and 'free' spells to secure wins.",
-            "cEDH Standard. Plays meta-defining combos (Thoracle/Breach).",
-            "Absolute Efficiency. Built for turn 0-3 victory/lockout. No fluff."
+            "Absolute Efficiency. Built for turn 0-3 victory. No fluff."
         ]
     };
 
     const brackets = [
-        { name: "Bracket 1: Exhibition", class: "b1", desc: "Prioritizes theme/expression. Substandard win-cons. Games expect 9+ turns. No 2-card combos." },
-        { name: "Bracket 2: Core", class: "b2", desc: "Mechanically focused but creative. Low pressure. Games expect 8+ turns. Win-cons are telegraphed." },
-        { name: "Bracket 3: Upgraded", class: "b3", desc: "Strong synergy and card quality. Proactive/reactive play. Games expect 6+ turns. Combos delayed." },
-        { name: "Bracket 4: Optimized", class: "b4", desc: "Lethal, fast, and consistent. Explosive threats. Games expect 4+ turns. No deck restrictions." },
-        { name: "Bracket 5: cEDH", class: "b5", desc: "Meticulously designed for the cEDH metagame. Victory prioritized over all else. Intricate play." }
+        { name: "Bracket 1: Exhibition", class: "b1", desc: "Prioritizes theme/expression. Substandard win-cons. Games expect 9+ turns." },
+        { name: "Bracket 2: Core", class: "b2", desc: "Mechanically focused but creative. Low pressure. Games expect 8+ turns." },
+        { name: "Bracket 3: Upgraded", class: "b3", desc: "Strong synergy and quality. Proactive/reactive play. Games expect 6+ turns." },
+        { name: "Bracket 4: Optimized", class: "b4", desc: "Lethal, fast, and consistent. Explosive threats. Games expect 4+ turns." },
+        { name: "Bracket 5: cEDH", class: "b5", desc: "Meticulously designed for the cEDH metagame. Victory prioritized over all else." }
     ];
 
     function update() {
@@ -167,12 +155,12 @@
     function calculateBracket(exp, soc, eng, win) {
         let index = 1;
         
-        // Weight-based mapping for the 10-point limited pool
-        if (win >= 7) index = 4; // cEDH focus
-        else if (win >= 5 || (win >= 4 && eng >= 4)) index = 3; // Optimized focus
-        else if (win >= 3 || eng >= 5) index = 2; // Upgraded focus
-        else if (exp >= 5 || soc >= 5) index = 0; // Theme/Social focus
-        else index = 1; // Balanced/Core focus
+        //Logic for 5pt max / 10pt pool
+        if (win >= 5) index = 4; // Max winning = cEDH
+        else if (win >= 4 || (win >= 3 && eng >= 4)) index = 3; // Optimized
+        else if (win >= 2 || eng >= 3) index = 2; // Upgraded
+        else if (exp >= 4 || soc >= 4) index = 0; // Exhibition
+        else index = 1; // Core
         
         const bracket = brackets[index];
         const res = document.getElementById('result-area');
