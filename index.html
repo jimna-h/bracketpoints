@@ -3,67 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Commander Bracket Ranker</title>
+    <title>Commander Bracket Ranker (32pt Scale)</title>
     <style>
         :root {
-            --bg: #f4f4f9;
+            --bg: #f0f2f5;
             --card: #ffffff;
-            --primary: #d32f2f;
-            --accent: #ffa000;
-            --text: #333;
+            --primary: #c62828;
+            --accent: #f9a825;
+            --text: #2c3e50;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; }
-        .container { background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 550px; }
-        h1 { text-align: center; color: var(--primary); margin-bottom: 5px; }
-        p.subtitle { text-align: center; font-size: 0.9em; color: #666; margin-bottom: 25px; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; }
+        .container { background: var(--card); padding: 35px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.12); width: 100%; max-width: 600px; }
+        h1 { text-align: center; color: var(--primary); margin: 0 0 5px 0; letter-spacing: -1px; }
+        p.subtitle { text-align: center; font-size: 0.95em; color: #666; margin-bottom: 30px; }
         
-        .stat-row { margin-bottom: 25px; }
-        .label-group { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; }
-        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--primary); margin-bottom: 5px; }
+        .stat-row { margin-bottom: 28px; background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 10px; }
+        .label-group { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px; }
+        .val-display { color: var(--primary); font-size: 1.2em; }
         
-        .flavor-text { font-size: 0.85em; color: #555; font-style: italic; min-height: 2.5em; line-height: 1.2; }
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--primary); margin-bottom: 10px; }
+        
+        .flavor-text { font-size: 0.9em; color: #555; line-height: 1.4; border-left: 3px solid #eee; padding-left: 10px; min-height: 2.8em; display: flex; align-items: center; }
 
-        .points-remaining { text-align: center; font-size: 1.2em; font-weight: bold; margin: 20px 0; padding: 15px; border-radius: 8px; background: #eee; transition: all 0.3s; }
-        .points-remaining.error { color: #fff; background: var(--primary); }
-        .points-remaining.success { color: #fff; background: #2e7d32; }
+        .points-remaining { text-align: center; font-size: 1.1em; font-weight: bold; margin: 20px 0; padding: 15px; border-radius: 8px; background: #e9ecef; transition: all 0.3s ease; }
+        .points-remaining.error { color: #fff; background: #d32f2f; }
+        .points-remaining.success { color: #fff; background: #2e7d32; border-color: #1b5e20; }
         
-        #result-area { margin-top: 25px; display: none; border-top: 2px solid #eee; padding-top: 20px; text-align: center; }
-        .bracket-badge { display: inline-block; padding: 8px 16px; border-radius: 20px; color: white; font-weight: bold; font-size: 1.2em; margin-bottom: 10px; }
+        #result-area { margin-top: 30px; display: none; border-top: 3px double #eee; padding-top: 25px; animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .b1 { background-color: #b0bec5; } .b2 { background-color: #81c784; } .b3 { background-color: #64b5f6; } .b4 { background-color: #9575cd; } .b5 { background-color: #d32f2f; }
-        .desc { font-size: 0.95em; line-height: 1.4; color: #555; text-align: left; }
+        .bracket-badge { display: inline-block; padding: 10px 20px; border-radius: 30px; color: white; font-weight: 900; font-size: 1.3em; margin-bottom: 15px; text-transform: uppercase; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        .b1 { background: #78909c; } .b2 { background: #66bb6a; } .b3 { background: #42a5f5; } .b4 { background: #7e57c2; } .b5 { background: #ef5350; }
+        .desc { font-size: 1em; line-height: 1.5; color: #444; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 8px; }
+        strong { color: #000; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Deck Ranker</h1>
-    <p class="subtitle">Distribute 10 points based on your deck's intent.</p>
+    <h1>Commander Ranker</h1>
+    <p class="subtitle">Distribute <strong>32 points</strong> across these four pillars.</p>
 
     <div id="inputs">
         <div class="stat-row">
-            <div class="label-group"><span>Expression</span> <span id="v1">0</span></div>
-            <input type="range" id="expression" min="0" max="10" value="0" oninput="update()">
+            <div class="label-group"><span>Expression</span> <span class="val-display" id="v1">0</span></div>
+            <input type="range" id="expression" min="0" max="8" value="0" oninput="update()">
             <div id="f1" class="flavor-text"></div>
         </div>
         <div class="stat-row">
-            <div class="label-group"><span>Social Fun</span> <span id="v2">0</span></div>
-            <input type="range" id="social" min="0" max="10" value="0" oninput="update()">
+            <div class="label-group"><span>Social Fun</span> <span class="val-display" id="v2">0</span></div>
+            <input type="range" id="social" min="0" max="8" value="0" oninput="update()">
             <div id="f2" class="flavor-text"></div>
         </div>
         <div class="stat-row">
-            <div class="label-group"><span>Do the Thing</span> <span id="v3">0</span></div>
-            <input type="range" id="engine" min="0" max="10" value="0" oninput="update()">
+            <div class="label-group"><span>Do the Thing</span> <span class="val-display" id="v3">0</span></div>
+            <input type="range" id="engine" min="0" max="8" value="0" oninput="update()">
             <div id="f3" class="flavor-text"></div>
         </div>
         <div class="stat-row">
-            <div class="label-group"><span>Winning</span> <span id="v4">0</span></div>
-            <input type="range" id="winning" min="0" max="10" value="0" oninput="update()">
+            <div class="label-group"><span>Winning</span> <span class="val-display" id="v4">0</span></div>
+            <input type="range" id="winning" min="0" max="8" value="0" oninput="update()">
             <div id="f4" class="flavor-text"></div>
         </div>
     </div>
 
-    <div id="points-bar" class="points-remaining">Points Remaining: 10</div>
+    <div id="points-bar" class="points-remaining">Points Remaining: 32</div>
 
     <div id="result-area">
         <div id="bracket-label" class="bracket-badge"></div>
@@ -74,65 +79,57 @@
 <script>
     const flavor = {
         expression: [
-            "Functional only. They may as well be blank or proxies.",
-            "I have some favorite art, but I won't play a bad card for it.",
-            "I'm starting to swap 'best in slot' for cards that fit the vibe.",
+            "Purely functional. Art and flavor have zero impact on card choice.",
+            "I have a few favorites, but power always comes first.",
+            "I’ll pick the 'cool' printing of a staple, but won't change the list.",
             "I'll choose a similar effect over a better card because of the art.",
-            "I spent extra time matching basic lands to the deck's flavor.",
-            "Theme-driven. The art/flavor informs at least 25% of the deck.",
-            "Strong aesthetic commitment. No 'ugly' cards allowed.",
-            "Mechanical synergy is secondary to the 'story' of the deck.",
-            "Every card must fit a strict visual or lore-based criteria.",
-            "Full Vibe. I'm playing 'Ladies Looking Left' or 'Only shirtless guys'.",
-            "Absolute Art. This is my 'Guys Sitting in Chairs' deck! No exceptions."
+            "Theme-driven: The deck is built around a clear visual or lore concept.",
+            "Strong commitment: I won't play certain 'best' cards if they ruin the vibe.",
+            "Substantial flavor: Card names and flavor text are as important as the mechanics.",
+            "Extreme dedication: Every basic land and token is curated to the theme.",
+            "Full Vibe: This is my 'Guys Sitting in Chairs' deck! Perfection over power."
         ],
         social: [
-            "I don't care if people have fun; I'm here to execute a plan.",
-            "Interaction is purely to stop others from winning.",
-            "I'll play some 'group hug' cards if they benefit me too.",
-            "I like the political aspect of the game and making deals.",
-            "I include cards that create interesting board states for everyone.",
-            "I'll intentionally avoid 'unfun' mechanics like Mass Land Destruction.",
-            "The goal is for the table to have a story to tell after the game.",
-            "I play cards that give opponents choices (Fact or Fiction, etc).",
-            "I'm happy to lose as long as everyone got to 'play' their decks.",
-            "The social experience is more important than my own board state.",
-            "Pure Chaos/Group Hug. I just want to see what happens to the table."
+            "Interaction is purely to protect my win or stop yours.",
+            "I play efficient, cold-blooded interaction (Free spells, silence).",
+            "I include some 'fair' interaction to keep the board from stalling.",
+            "I enjoy making deals and playing 'politics' during the game.",
+            "I avoid 'unfun' mechanics like MLD or hard locks to keep things social.",
+            "I run cards that give opponents choices or create mini-games.",
+            "I'm happy to lose as long as the table had a memorable game.",
+            "I prioritize the table's enjoyment over my own narrow path to victory.",
+            "Pure Social: I am essentially a 100-card dungeon master for the table."
         ],
         engine: [
-            "My cards don't need to 'do a thing' together; they just need to be good.",
-            "A few minor synergies exist (e.g., standard tribal lords).",
-            "The deck has a clear mechanical goal it wants to achieve.",
-            "I've included extra card draw to make sure the engine stays online.",
-            "The deck is built around a specific keyword or commander ability.",
-            "I spend most of my turns setting up a complex value engine.",
-            "If my engine isn't disrupted, I will generate massive value.",
-            "The deck is a 'Rube Goldberg machine' of interconnected pieces.",
-            "I'll keep playing even if I can't win, just to see the engine run.",
-            "Winning is a side effect of successfully 'Doing the Thing'.",
-            "The engine IS the deck. I'll spend 20 minutes on a non-deterministic turn."
+            "No specific engine. Just 99 'good stuff' cards.",
+            "Standard tribal/archetype synergies (e.g. 'I play elves').",
+            "The deck has a clear mechanical loop it wants to establish.",
+            "I spend several turns carefully assembling a value engine.",
+            "The deck is built around a specific, unique commander ability.",
+            "If the engine is left alone for 2 turns, I will likely run away with value.",
+            "The deck is a Rube Goldberg machine of interconnected triggered abilities.",
+            "I'll keep the engine running even if it doesn't lead directly to a win.",
+            "The 'Thing' is the goal. I'll spend 20 minutes on a turn just to draw my deck."
         ],
         winning: [
-            "Winning is not the goal. I'm just here to hang out.",
-            "I might win by accident if the game goes long enough.",
-            "I use standard combat damage to eventually whittle people down.",
-            "I have a clear 'Finisher' (like Craterhoof) to end stalled games.",
-            "I run efficient tutors to find my win conditions faster.",
-            "The deck is built to win efficiently around turn 7-9.",
-            "I use 2-card combos to end games when the timing is right.",
-            "Speed and consistency are my top priorities. Turn 4-5 is the goal.",
-            "I play the most efficient 'free' spells and fast mana available.",
-            "I am playing a tuned cEDH list designed for a specific meta.",
-            "Victory over all else. This deck ends the game as fast as mathematically possible."
+            "Winning is not the goal. I am here to witness the game.",
+            "I might win by accident if the game lasts 15 turns.",
+            "I use standard combat and high-MV spells to close out the game.",
+            "I run a few tutors and a clear 'finisher' card (Craterhoof, etc).",
+            "Speed is a factor. I aim to threaten a win by turns 7-8.",
+            "Consistent and fast. I use 2-card combos and efficient tutors.",
+            "Optimized: High-power staples and fast mana are included.",
+            "cEDH Leanings: My deck is built to win or lock the game by turn 3-4.",
+            "Victory over all: This is a top-tier meta list. Efficiency is absolute."
         ]
     };
 
     const brackets = [
-        { name: "Bracket 1: Exhibition", class: "b1", desc: "Prioritizes theme and expression over power. Win conditions are thematic or substandard. Expect 9+ turns." },
-        { name: "Bracket 2: Core", class: "b2", desc: "Mechanically focused but creative. Low pressure, proactive gameplay. Expect 8+ turns." },
-        { name: "Bracket 3: Upgraded", class: "b3", desc: "Strong synergy and high card quality. Can effectively disrupt opponents. Expect 6+ turn games." },
-        { name: "Bracket 4: Optimized", class: "b4", desc: "Lethal and fast. Does not adhere to the cEDH metagame but uses high-power staples. Expect turn 4+." },
-        { name: "Bracket 5: cEDH", class: "b5", desc: "Meticulously designed for the cEDH metagame. Razor-thin margins for error. Games could end on any turn." }
+        { name: "Bracket 1: Exhibition", class: "b1", desc: "<strong>Players Expect:</strong> Decks to prioritize theme over power. Games to last 9+ turns. <strong>Restricted:</strong> No 2-card combos or mass land denial." },
+        { name: "Bracket 2: Core", class: "b2", desc: "<strong>Players Expect:</strong> Mechanically focused but creative. Low pressure, proactive play. Games to last 8+ turns. <strong>Restricted:</strong> No 2-card combos or lockouts." },
+        { name: "Bracket 3: Upgraded", class: "b3", desc: "<strong>Players Expect:</strong> Strong synergy and high card quality. Many proactive and reactive plays. Games to last 6+ turns. <strong>Restricted:</strong> No 2-card combos before turn 6." },
+        { name: "Bracket 4: Optimized", class: "b4", desc: "<strong>Players Expect:</strong> Lethal, consistent, and fast. Explosive threats and efficient disruption. Games to last 4+ turns. <strong>Restricted:</strong> None." },
+        { name: "Bracket 5: cEDH", class: "b5", desc: "<strong>Players Expect:</strong> Meticulously designed for the cEDH metagame. Razor-thin margins for error. Games can end on any turn. <strong>Restricted:</strong> None." }
     ];
 
     function update() {
@@ -152,13 +149,13 @@
         document.getElementById('f4').innerText = flavor.winning[v4];
 
         const total = v1 + v2 + v3 + v4;
-        const remaining = 10 - total;
+        const remaining = 32 - total;
         const bar = document.getElementById('points-bar');
         const resultArea = document.getElementById('result-area');
 
         if (remaining < 0) {
             bar.className = 'points-remaining error';
-            bar.innerText = `Over Limit by ${Math.abs(remaining)}!`;
+            bar.innerText = `Over Limit by ${Math.abs(remaining)}! (Total: ${total})`;
             resultArea.style.display = 'none';
         } else if (remaining > 0) {
             bar.className = 'points-remaining';
@@ -166,7 +163,7 @@
             resultArea.style.display = 'none';
         } else {
             bar.className = 'points-remaining success';
-            bar.innerText = `Points Balanced!`;
+            bar.innerText = `Points Balanced! (32/32)`;
             calculateBracket(v1, v2, v3, v4);
         }
     }
@@ -174,21 +171,28 @@
     function calculateBracket(exp, soc, eng, win) {
         let index = 1; // Default to Core
         
-        // Priority logic based on the Bracket graphic:
-        if (win >= 7) index = 4; // cEDH
-        else if (win >= 4 || (win + eng >= 8)) index = 3; // Optimized
-        else if (win >= 2 || eng >= 5) index = 2; // Upgraded
-        else if (exp >= 6 || soc >= 6) index = 0; // Exhibition
+        // Threshold-based Logic for 8pt scale
+        if (win >= 7) {
+            index = 4; // cEDH
+        } else if (win >= 5 || (win >= 4 && eng >= 6)) {
+            index = 3; // Optimized
+        } else if (win >= 3 || eng >= 4) {
+            index = 2; // Upgraded
+        } else if (exp >= 6 || soc >= 6) {
+            index = 0; // Exhibition
+        } else {
+            index = 1; // Core
+        }
         
         const bracket = brackets[index];
-        resultArea.style.display = 'block';
+        const res = document.getElementById('result-area');
+        res.style.display = 'block';
         const label = document.getElementById('bracket-label');
         label.innerText = bracket.name;
         label.className = 'bracket-badge ' + bracket.class;
-        document.getElementById('bracket-desc').innerText = bracket.desc;
+        document.getElementById('bracket-desc').innerHTML = bracket.desc;
     }
 
-    // Initialize text
     update();
 </script>
 
